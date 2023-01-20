@@ -1,35 +1,69 @@
-import { Profile } from './Profile/Profile';
-import { Statistics } from './Statistics/Statistics';
-import { FriendList } from './FriendList/FriendList';
-import { TransactionHistory } from './TransactionHistory/TransactionHistory';
+import { Component } from 'react';
+import { ContactForm } from './ContactForm/ContactForm'
+import { ContactList } from './ContactList/ContactList';
+import {Filter} from './Filter/Filter';
 
+import { nanoid } from 'nanoid';
 
+export class App extends Component {
+  state = {
+    contacts: [
+    {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
+    {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
+    {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
+    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
+  ],
+    filter: '',
+  }
+  
+  handleSubmitForm = ({name, number}) => {
+    const findRepeat = this.state.contacts.find(contact =>
+      contact.name.toLowerCase() === name.toLowerCase());
+    if (findRepeat) {
+      alert(`${name} is already in contacts`);
+    }
+      else {
+    const contact = {
+      id: nanoid(),
+      name,
+      number,
+    }
+    this.setState(prevState => ({
+      contacts: [... prevState.contacts, contact],
+    }))
+    }
+  }
 
-import user from '../user.json';
-import data from '../data.json';
-import friends from '../friends.json';
-import transactions from '../transactions.json';
+  changeFilter = (evt) => {
+    this.setState({ filter: evt.currentTarget.value });
+  } 
 
+  getVisibleContasts = () => {
+    const { contacts, filter } = this.state;
 
+    const normalisedFilter = filter.toLowerCase();
+    const visebleContacts = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalisedFilter));
+    return visebleContacts;
+  }
 
-export const App = () => {
-  return (
-    <>
-      <Profile
-  username={user.username}
-  tag={user.tag}
-  location={user.location}
-  avatar={user.avatar}
-  stats={user.stats}
-      />
-      <Statistics title="Upload stats" stats={data} />
-      <FriendList friends={friends} />
-      <TransactionHistory items={transactions} />
+  deleteContacts = (idContact) => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== idContact),
+    }))
+  }
+  
+  render() {
 
-    </>
-    
-    
-  );
-};
-
+    return (
+      <div>
+        <h1>Phonebook</h1>
+        <ContactForm onSubmit={this.handleSubmitForm} />
+        <h2>Contacts</h2>
+        <Filter filterValue={this.state.filter} changeFilter={this.changeFilter} />
+        <ContactList listItems={this.getVisibleContasts()} onDelete={this.deleteContacts} />
+      </div>
+    )
+  }
+}
 
