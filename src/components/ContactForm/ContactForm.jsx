@@ -1,9 +1,27 @@
 import PropTypes from 'prop-types';
 import { Formik, Field, Form } from 'formik';
 import { Component } from 'react';
-// import {InputFormik} from './Phonebook.styled'
+import styled from 'styled-components';
+
+import {FormWrapper, Button} from './ContactForm.styled'
+
+const Input = styled(Field)`
+    width: 250px;
+    height: 20px;
+    `
+    
+const FormWithStyle = styled(Form)`
+display: flex;
+flex-wrap: wrap;
+gap: 20px;
+justify-content: space-between;
+`;
 
 export class ContactForm extends Component {
+    static propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+}
+
     state = {
             name: '',
             number: ''
@@ -28,16 +46,16 @@ export class ContactForm extends Component {
 
     render() {
     return (
-      
+      <FormWrapper>
         <Formik
         initialValues={{name: '', number: ''}}
       onSubmit={this.handleSubmit}
     >
-      <Form autoComplete = "off">
+      <FormWithStyle autoComplete = "off">
             <label htmlFor="name">
                 Name
             </label>
-                <Field
+                <Input
                     id="name"
                     name="name"
                     type="text"
@@ -47,16 +65,17 @@ export class ContactForm extends Component {
             <label htmlFor="number">
                 Contacts
             </label>
-                <Field
+                <Input
                     id="number"
                     name="number"
                     type="tel"
                     pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
                     value={this.state.number} onChange={this.handleInputChange} />
 
-        <button type="submit" >Add contact</button>
-      </Form>
-    </Formik>
+        <Button type="submit" >Add contact</Button>
+      </FormWithStyle>
+            </Formik>
+            </FormWrapper>
     )
   }
 
